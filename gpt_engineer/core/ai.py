@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 class AI:
     def __init__(
         self,
-        model_name="gpt-4-1106-preview",
+        model_name="mistralai/mistral-7b-instruct",
         temperature=0.1,
         azure_endpoint="",
         streaming=True,
@@ -220,6 +220,12 @@ class AI:
         BaseChatModel
             The created chat model.
         """
+
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=getenv("OPENROUTER_API_KEY"),
+        )
+        
         if self.azure_endpoint:
             return AzureChatOpenAI(
                 openai_api_base=self.azure_endpoint,
@@ -234,7 +240,7 @@ class AI:
             model=self.model_name,
             temperature=self.temperature,
             streaming=self.streaming,
-            client=openai.ChatCompletion,
+            client=client.ChatCompletion,
             callbacks=[StreamingStdOutCallbackHandler()],
         )
 
